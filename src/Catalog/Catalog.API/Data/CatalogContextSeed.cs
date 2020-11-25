@@ -80,7 +80,7 @@ namespace Catalog.API.Data
                     Category = "Home Kitchen"
                 }
 
-           }
+           };
         }
     }
 }

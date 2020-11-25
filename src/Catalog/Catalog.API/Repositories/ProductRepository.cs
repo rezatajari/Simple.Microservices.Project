@@ -52,7 +52,7 @@ namespace Catalog.API.Repositories
         public async Task<IEnumerable<Product>> GetProductByName(string name)
         {
 
-            FilterDefinition<Product> filter = Builders<Product>.Filter.ElemMatch(p => p.Name, name);
+            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Name, name);
 
             return await _context
                          .Products
@@ -65,10 +65,10 @@ namespace Catalog.API.Repositories
         /// </summary>
         /// <param name="categoryName">اسم دسته بندی درخواستی</param>
         /// <returns></returns>
-        public async Task<IEnumerable<Product>> GetProductByCategory(string categoryName)
+        public async Task<IEnumerable<Product>> GetProductByCategory(string category)
         {
 
-            FilterDefinition<Product> filter = Builders<Product>.Filter.ElemMatch(p => p.Category, categoryName);
+            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Category, category);
 
             return await _context
                          .Products
