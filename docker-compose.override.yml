@@ -18,6 +18,5 @@ services:
             - catalogdb
         volumes:
             - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
-            - ${HOME}/.aspnet/https:/root/.aspnet/https/
         ports:
             - "8000:80"
