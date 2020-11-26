@@ -7,11 +7,11 @@ namespace Catalog.API.Data
 {
     public class CatalogContext : ICatalogContext
     {
-
+     
         public CatalogContext(ICatalogDatabaseSettings settings)
         {
             // اتصال برقرار کردن به دیتابیس مونگو
-            var client = new MongoClient("mongodb://username:password@ds011111.mongolab.com:11111/db-name");
+            var client = new MongoClient(settings.ConnectionString);
 
             // انتخاب دیتابیس مونگو برای کاتالوگ
             var database = client.GetDatabase(settings.DatabaseName);
