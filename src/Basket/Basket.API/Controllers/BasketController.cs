@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
 using Basket.API.Entities;
 using Basket.API.Repositories.Interfaces;
+using EventBusRabbitMQ.Common;
+using EventBusRabbitMQ.Events;
+using EventBusRabbitMQ.Producer;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Basket.API.Controllers
@@ -15,10 +17,14 @@ namespace Basket.API.Controllers
     {
 
         private readonly IBasketRepository _repository;
+        private readonly IMapper _mapper;
+        private readonly EventBusRabbitMQProducer _eventBus;
 
-        public BasketController(IBasketRepository repository)
+        public BasketController(IBasketRepository repository, IMapper mapper,EventBusRabbitMQProducer eventBus)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
         }
 
         /// <summary>
@@ -51,11 +57,49 @@ namespace Basket.API.Controllers
         /// </summary>
         /// <param name="userName">نام کاربر</param>
         /// <returns></returns>
-        [HttpDelete]
+        [HttpDelete(template: "{userName}")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteBasket(string userName)
         {
             return Ok(await _repository.DeleteBasket(userName));
+        }
+
+        /// <summary>
+        /// عملیات ارسال رویداد حساب کردن سبد به ربیت ام کیو
+        /// </summary>
+        /// <param name="basketChekout">مدل سبد</param>
+        /// <returns></returns>
+        [Route(template: "[action]")]
+        [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Checkout([FromBody] BasketChekout basketChekout)
+        {
+            // گرفتن سبد
+            BasketCart basket = await _repository.GetBasket(basketChekout.UserName);
+            if (basket == null)
+                return BadRequest();
+
+            // حذف سبد 
+            bool basketRemoved = await _repository.DeleteBasket(basket.UserName);
+            if (!basketRemoved)
+                return BadRequest();
+
+            // ارسال سبد به ربیت ام کیو
+             BasketCheckoutEvent eventMessage = _mapper.Map<BasketCheckoutEvent>(basketChekout);
+             eventMessage.RequestId = Guid.NewGuid();
+             eventMessage.TotalPrice = basket.TotalPrice;
+
+             try
+             {
+                 _eventBus.PublishBasketCheckout(EvenBusConstants.BasketCheckoutQueue, eventMessage);
+             }
+             catch (Exception e)
+             {
+                 throw;
+             }
+
+             return Accepted();
         }
     }
 }

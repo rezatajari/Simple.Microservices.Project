@@ -43,7 +43,7 @@ namespace EventBusRabbitMQ
             }
             catch (BrokerUnreachableException)
             {
-                Thread.Sleep(2000);
+                Thread.Sleep(millisecondsTimeout: 2000);
                 _connection = _connectionFactory.CreateConnection();
             }
 
@@ -60,7 +60,7 @@ namespace EventBusRabbitMQ
         public IModel CreateModel()
         {
             if (!IsConnected)
-                throw new InvalidOperationException("No rabbit connection");
+                throw new InvalidOperationException(message:"No rabbit connection");
 
             return _connection.CreateModel();
         }

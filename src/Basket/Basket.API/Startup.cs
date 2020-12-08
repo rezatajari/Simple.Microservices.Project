@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Basket.API.Data;
 using Basket.API.Data.Interfaces;
 using Basket.API.Repositories;
@@ -36,16 +37,17 @@ namespace Basket.API
 
             services.AddSingleton<ConnectionMultiplexer>(sp =>
             {
-                var configuration = ConfigurationOptions.Parse(Configuration.GetConnectionString("Redis"), true);
+                var configuration = ConfigurationOptions.Parse(Configuration.GetConnectionString(name: "Redis"), ignoreUnknown: true);
                 return ConnectionMultiplexer.Connect(configuration);
             });
 
             services.AddTransient<IBasketContext, BasketContext>();
             services.AddTransient<IBasketRepository, BasketRepository>();
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Basket API", Version = "v1" });
+                c.SwaggerDoc(name:"v1", new OpenApiInfo { Title = "Basket API", Version = "v1" });
             });
 
             services.AddSingleton<IRabbitMQConnection>(sp =>
@@ -89,7 +91,7 @@ namespace Basket.API
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Basket API V1");
+                c.SwaggerEndpoint(url:"/swagger/v1/swagger.json", name:"Basket API V1");
             });
         }
     }

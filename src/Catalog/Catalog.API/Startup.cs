@@ -36,7 +36,7 @@ namespace Catalog.API
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalog API", Version = "v1" ,Description="This swagger is for Catalog.API that we can excude some Http verbs"});
+                c.SwaggerDoc(name:"v1", new OpenApiInfo { Title = "Catalog API", Version = "v1" ,Description="This swagger is for Catalog.API that we can excude some Http verbs"});
             });
         }
 
@@ -60,7 +60,7 @@ namespace Catalog.API
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Catalog API V1");
+                c.SwaggerEndpoint(url:"/swagger/v1/swagger.json", name:"Catalog API V1");
             });
 
         }

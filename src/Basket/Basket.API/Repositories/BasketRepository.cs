@@ -41,7 +41,7 @@ namespace Basket.API.Repositories
         /// <returns></returns>
         public async Task<BasketCart> UpdateBasket(BasketCart basket)
         {
-            var updated = await _context
+            bool updated = await _context
                                 .Redis
                                 .StringSetAsync(basket.UserName,JsonConvert.SerializeObject(basket));
 
