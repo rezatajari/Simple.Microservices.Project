@@ -10,12 +10,12 @@ namespace Catalog.API.Data
         public static void SeedData(IMongoCollection<Product> productCollection)
         {
             // بررسی موجود بودن داده داخل کالکشن
-            bool existProduct = productCollection.Find(p => true).Any();
+            bool existProduct = productCollection.Find(filter: p => true).Any();
 
             // در صورت نداشتن داده ای داخل کالکشن مورد نظر آن را پُر کن
             if (!existProduct)
             {
-                productCollection.InsertManyAsync(GetPreconfiguredProducts());
+                productCollection.InsertManyAsync(documents: GetPreconfiguredProducts());
             }
         }
 

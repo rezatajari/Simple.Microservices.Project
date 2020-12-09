@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Catalog.API.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route(template: "api/v1/[controller]")]
     [ApiController]
     public class CatalogController : ControllerBase
     {
@@ -32,7 +32,7 @@ namespace Catalog.API.Controllers
         [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            var products = await _repository.GetProducts();
+            IEnumerable<Product> products = await _repository.GetProducts();
             return Ok(products);
         }
 
@@ -41,7 +41,7 @@ namespace Catalog.API.Controllers
         /// </summary>
         /// <param name="id">آیدی محصول درخواستی</param>
         /// <returns></returns>
-        [HttpGet("{id:length(24)}", Name = "GetProduct")]
+        [HttpGet(template: "{id:length(24)}", Name = "GetProduct")]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<Product>> GetProductById(string id)
@@ -50,7 +50,7 @@ namespace Catalog.API.Controllers
 
             if (product == null)
             {
-                _logger.LogError($"Product with id: {id}, not found.");
+                _logger.LogError(message: $"Product with id: {id}, not found.");
                 return NotFound();
             }
 
@@ -62,13 +62,13 @@ namespace Catalog.API.Controllers
         /// </summary>
         /// <param name="category">دسته بندی مورد نظر</param>
         /// <returns></returns>
-        [Route("[action]/{category}")]
+        [Route(template: "[action]/{category}")]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Product>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductByCategory(string category)
         {
 
-            var product = await _repository.GetProductByCategory(category);
+            IEnumerable<Product> product = await _repository.GetProductByCategory(category);
             return Ok(product);
 
         }
@@ -84,7 +84,7 @@ namespace Catalog.API.Controllers
         {
             await _repository.Create(product);
 
-            return CreatedAtRoute("GetProduct", new { id = product.Id }, product);
+            return CreatedAtRoute(routeName: "GetProduct", routeValues: new { id = product.Id }, value: product);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Catalog.API.Controllers
         /// </summary>
         /// <param name="id">آیدی محصول برای حذف آن</param>
         /// <returns></returns>
-        [HttpDelete("{id:length(24)}")]
+        [HttpDelete(template: "{id:length(24)}")]
         [ProducesResponseType(typeof(void),(int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteProductById(string id)
         {

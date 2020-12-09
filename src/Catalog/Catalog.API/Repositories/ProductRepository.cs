@@ -26,7 +26,7 @@ namespace Catalog.API.Repositories
         {
             return await _context
                          .Products
-                         .Find(p => true)
+                         .Find(filter:p => true)
                          .ToListAsync();
         }
 
@@ -39,7 +39,7 @@ namespace Catalog.API.Repositories
         {
             return await _context
                          .Products
-                         .Find(p => p.Id == id)
+                         .Find(filter: p => p.Id == id)
                          .FirstOrDefaultAsync();
 
         }
@@ -52,7 +52,7 @@ namespace Catalog.API.Repositories
         public async Task<IEnumerable<Product>> GetProductByName(string name)
         {
 
-            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Name, name);
+            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(field: p => p.Name, name);
 
             return await _context
                          .Products
@@ -68,7 +68,7 @@ namespace Catalog.API.Repositories
         public async Task<IEnumerable<Product>> GetProductByCategory(string category)
         {
 
-            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Category, category);
+            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(field: p => p.Category, category);
 
             return await _context
                          .Products
@@ -109,7 +109,7 @@ namespace Catalog.API.Repositories
         /// <returns></returns>
         public async Task<bool> Delete(string id)
         {
-            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Id, id);
+            FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(field: p => p.Id, id);
 
             DeleteResult deleteResult = await _context
                                             .Products
